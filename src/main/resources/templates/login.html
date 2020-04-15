@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Авторизация</title>
+
+    <link rel="stylesheet" href="../static/css/login.css" th:href="@{/css/login.css}">
+</head>
+<body>
+    <form th:action="@{/login}" method="POST">
+        <input type="text" name="username"placeholder="Имя пользователя" />
+        <br>
+        <br>
+        <input type="password" name="password" placeholder="Пароль" />
+        <br>
+        <br>
+        <button type="submit">Войти</button>
+    </form>
+</body>
+</html>

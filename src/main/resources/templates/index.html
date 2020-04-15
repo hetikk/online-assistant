@@ -1,0 +1,15 @@
+<!DOCTYPE HTML>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Главная</title>
+
+    <link rel="stylesheet" type="text/css" th:href="@{/css/index.css}"/>
+</head>
+<body>
+    <div th:switch="${state}">
+        <a th:href="@{/change-state}" class="on" th:case="true">Включено</a>
+        <a th:href="@{/change-state}" class="off" th:case="false">Выключено</a>
+    </div>
+</body>
+</html>
