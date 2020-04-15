@@ -2,12 +2,12 @@ function getAnswers() {
     var result = '-';
 
     var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'http://localhost:8080/test', false);
-    // xhr.open('POST', '.../test', false);
+    // xhr.open('POST', 'http://localhost:8080/test', false);
+    xhr.open('POST', 'https://online--assistant.herokuapp.com/test', false);
     xhr.setRequestHeader('Accept', 'text/html; charset=utf-8');
     xhr.setRequestHeader('Content-Type', 'text/html');
     xhr.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
+        if (this.readyState === 4 && this.status === 200) {
             result = JSON.parse(this.responseText);
         }
     };
@@ -19,16 +19,16 @@ function getAnswers() {
 function exec() {
     var trs = document.querySelectorAll('#mainPanel > table > tbody > tr');
     if (trs.length > 0) {
-        console.debug('страница тестироания')
-        console.debug('подождите...')
-        let response = getAnswers();
+        console.debug('страница тестироания');
+        console.debug('подождите...');
+        var response = getAnswers();
         console.debug(response);
 
         document.body.oncontextmenu = function (event) {
-            if (response != '-') {
+            if (response !== '-') {
                 var questSeqNum = event.target.innerHTML;
                 if (typeof response[questSeqNum] !== 'undefined') {
-                    for (let i = 0; i < response[questSeqNum].length; i++) {
+                    for (var i = 0; i < response[questSeqNum].length; i++) {
                         document.getElementById(response[questSeqNum][i]).checked = 'true';
                     }
                 } else {
