@@ -1,7 +1,8 @@
 {
 	"manifest_version" : 2,
-	"name": "client",
+	"name": "Client",
 	"version": "1.0",
+	"icons": { "48": "icon.png" },
 	"background" : {
 		"scripts" : ["background.js"]
 	},
