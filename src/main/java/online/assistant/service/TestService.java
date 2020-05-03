@@ -35,6 +35,8 @@ public class TestService {
     private Resource[] accessAllowed;
     private List<String> GOOD_MANS;
 
+    private static final double PERMITTED_PERCENT = 0.60;
+
     /**
      * Метод, в котором считывается файл, содержащий список пользователей,
      * которые получают полный список ответов
@@ -56,8 +58,8 @@ public class TestService {
         TestRequest request = parse(body);
 
         Map<String, Set<String>> response = repository.getAnswers(request);
-        int originalSize = response.size();
-        int permitted = (int) (response.size() * 0.6);
+        int originalSize = request.getQuestions().size();
+        int permitted = (int) (response.size() * PERMITTED_PERCENT);
 
         if (IndexController.active) {
             if (!GOOD_MANS.contains(request.getStudent())) {
@@ -73,8 +75,8 @@ public class TestService {
 
         LOG.info("Студент: " + request.getStudent());
         LOG.info("Дисциплина: " + request.getSubject());
-        LOG.info(String.format("Разрешено: %d/%d", response.size(), originalSize));
-        LOG.info(String.format("Отправлено: %d/%d", response.size(), originalSize));
+        LOG.info(String.format("Разрешено: %s", GOOD_MANS.contains(request.getStudent()) ? "100%" : ((int)(PERMITTED_PERCENT * 100)) + "%"));
+        LOG.info("Результат: " + (IndexController.active ? (response.size() + "/" + originalSize) : "обработка отключена"));
 
         return gson.toJson(response);
     }

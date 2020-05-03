@@ -112,7 +112,7 @@ public class QuestionRepository {
                                     e.printStackTrace();
                                 }
                             } else {
-                                result.put(questSeqNumStr, Collections.singleton(answerEntry.getValue()));
+                                result.put(questSeqNumStr, new TreeSet<>(Collections.singletonList(answerEntry.getValue())));
                             }
                         }
                     }

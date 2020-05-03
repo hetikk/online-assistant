@@ -8,7 +8,7 @@ public class Application {
 
     /*
         heroku commands:
-        heroku logs -n 1500 --app gmi-testing-solver
+        heroku logs -n 5000 --app online--assistant
      */
 
     public static void main(String[] args) {
