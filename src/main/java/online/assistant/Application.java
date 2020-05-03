@@ -8,7 +8,10 @@ public class Application {
 
     /*
         heroku commands:
-        heroku logs -n 5000 --app online--assistant
+        heroku logs -n 150 --app online--assistant
+
+        git commands:
+        git push -u origin master
      */
 
     public static void main(String[] args) {

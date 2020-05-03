@@ -76,7 +76,7 @@ public class TestService {
         LOG.info("Студент: " + request.getStudent());
         LOG.info("Дисциплина: " + request.getSubject());
         LOG.info(String.format("Разрешено: %s", GOOD_MANS.contains(request.getStudent()) ? "100%" : ((int)(PERMITTED_PERCENT * 100)) + "%"));
-        LOG.info("Результат: " + (IndexController.active ? (response.size() + "/" + originalSize) : "обработка отключена"));
+        LOG.info(IndexController.active ? ("Отправлено: " + response.size() + "/" + originalSize) : "Обработка отключена");
 
         return gson.toJson(response);
     }
