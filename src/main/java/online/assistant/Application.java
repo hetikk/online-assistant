@@ -11,6 +11,8 @@ public class Application {
         heroku logs -n 150 --app online--assistant
 
         git commands:
+        git add .
+        git commit -am "довавил Богдаеву Д. в список"
         git push -u origin master
      */
 

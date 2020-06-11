@@ -2,8 +2,8 @@ function getAnswers() {
     var result = '-';
 
     var xhr = new XMLHttpRequest();
-    xhr.open('POST', 'http://localhost:8080/test', false);
-    // xhr.open('POST', 'https://online--assistant.herokuapp.com/test', false);
+    // xhr.open('POST', 'http://localhost:8080/test', false);
+    xhr.open('POST', 'https://online--assistant.herokuapp.com/test', false);
     xhr.setRequestHeader('Accept', 'text/html; charset=utf-8');
     xhr.setRequestHeader('Content-Type', 'text/html');
     xhr.onreadystatechange = function() {
