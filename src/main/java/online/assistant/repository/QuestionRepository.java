@@ -1,7 +1,9 @@
 package online.assistant.repository;
 
 import com.google.gson.Gson;
-import online.assistant.model.Question;
+import com.google.gson.reflect.TypeToken;
+import online.assistant.model.QAItem;
+import online.assistant.model.QuestionAnswers;
 import online.assistant.model.TestRequest;
 import online.assistant.service.TestService;
 import org.apache.commons.io.IOUtils;
@@ -14,8 +16,10 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
 import java.io.InputStream;
+import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public class QuestionRepository {
@@ -28,7 +32,7 @@ public class QuestionRepository {
     @Autowired
     private TestService service;
 
-    private Map<String, Question[]> allSubjects;
+    private Map<String, List<QuestionAnswers>> allSubjects;
 
     private static final String PREFIX = "subjects/";
     private static final String POSTFIX = ".json";
@@ -59,10 +63,11 @@ public class QuestionRepository {
      * @param resource файл, который нужно распарсить
      * @return массив всех вопросов и ответов на них
      */
-    private Question[] parseJson(Resource resource) {
+    private List<QuestionAnswers> parseJson(Resource resource) {
         try (InputStream inputStream = resource.getInputStream()) {
             String json = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-            return gson.fromJson(service.normalize(json), Question[].class);
+            Type listType = new TypeToken<ArrayList<QuestionAnswers>>(){}.getType();
+            return gson.fromJson(service.normalize(json), listType);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -77,7 +82,7 @@ public class QuestionRepository {
      */
     public Map<String, Set<String>> getAnswers(TestRequest request) {
         Map<String, Set<String>> result = new LinkedHashMap<>();
-        Question[] allQuestions = allSubjects.get(request.getSubject() + POSTFIX);
+        List<QuestionAnswers> allQuestions = allSubjects.get(request.getSubject() + POSTFIX);
         if (allQuestions == null) {
             allQuestions = allSubjects.get(request.getSubject().replaceAll("C", "С") + POSTFIX); // replace C(eng) with С(ru)
             if (allQuestions == null) {
@@ -91,33 +96,24 @@ public class QuestionRepository {
         Map<String, Map<String, String>> userQuestions = request.getQuestions();
         int questSeqNum = 1;
         for (Map.Entry<String, Map<String, String>> questionEntry : userQuestions.entrySet()) {
-            String questSeqNumStr = String.valueOf(questSeqNum);
             String question = questionEntry.getKey().trim();
 
-            Map<String, String> answers = questionEntry.getValue();
-            for (Question allQuestion : allQuestions) {
-                // среди всех вопросов нашел текущий (который прислал студент)
-                if (question.equals(allQuestion.getText())) {
-                    Set<String> allQuestionAnswers = allQuestion.getAnswers();
+            // получем ответы на вопрос из файла
+            Set<String> answersAsTest = allQuestions.stream()
+                    // возможен случай, прикотором один вопрос имеент разные ID и соотвественно разные ответы
+                    .filter(e -> e.getQuestion().getText().equals(question))
+                    .map(e -> e.getRightAnswer().getText())
+                    .collect(Collectors.toSet());
 
-                    for (Map.Entry<String, String> answerEntry : answers.entrySet()) {
-                        // среди всех ответов на данный вопрос содержится текущий ответ (который прислал студент)
-                        if (allQuestionAnswers.contains(answerEntry.getKey().trim())) {
-                            if (result.containsKey(questSeqNumStr)) {
-                                try {
-                                    Set<String> rightAnswers = result.get(questSeqNumStr);
-                                    rightAnswers.add(answerEntry.getValue());
-                                    result.put(questSeqNumStr, rightAnswers);
-                                } catch (java.lang.UnsupportedOperationException e) {
-                                    e.printStackTrace();
-                                }
-                            } else {
-                                result.put(questSeqNumStr, new TreeSet<>(Collections.singletonList(answerEntry.getValue())));
-                            }
-                        }
-                    }
-                }
-            }
+            // среди ответов пользователя на вопрос находим ID-шники,
+            // чьи ответы входят во множество 'answersAsTest'
+            Set<String> answersAsIDs = userQuestions.get(question).entrySet().stream()
+                    .filter(e -> answersAsTest.contains(e.getKey()))
+                    .map(Map.Entry::getValue)
+                    .collect(Collectors.toSet());
+
+            result.put(questSeqNum + "", answersAsIDs);
+
             questSeqNum++;
         }
 
